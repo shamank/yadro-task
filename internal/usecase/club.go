@@ -101,15 +101,14 @@ func (c *Club) ClientArrived(timeAt time.Time, clientName string) error {
 
 // ClientTookTable is called when a client takes a table
 func (c *Club) ClientTookTable(timeAt time.Time, clientName string, computerNumber int) error {
+	// checking the client for being in the club
+	if err := c.checkClient(clientName); err != nil {
+		return err
+	}
 
 	// checking the table for busy
 	if table := c.Tables[computerNumber]; table.UsedBy != "" {
 		return errPlaceBusy
-	}
-
-	// checking the client for being in the club
-	if err := c.checkClient(clientName); err != nil {
-		return err
 	}
 
 	// client occupies the computer

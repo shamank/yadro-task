@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -57,10 +58,18 @@ func NewEventFromString(row string) (*Event, error) {
 
 	body := data[2:]
 
+	if eventID == EInClientTookTable && len(body) != 2 {
+		return nil, errors.New(row)
+	}
+
+	if match, _ := regexp.MatchString("^[a-z0-9_-]*$", body[0]); !match {
+		return nil, errors.New(row)
+	}
+
 	return NewEvent(eventID, triggerAt, body), nil
 }
 
-// Create events from a bufio.Scanner
+// NewEventsFromScanner create events from a bufio.Scanner
 func NewEventsFromScanner(sc *bufio.Scanner) ([]*Event, error) {
 
 	events := make([]*Event, 0)
@@ -89,7 +98,7 @@ func (e *Event) ToString() string {
 	return e.GenerateOutString(e.ID, strings.Join(e.Body, " "))
 }
 
-// Generate error message
+// Error Generate error message
 func (e *Event) Error(err error) string {
 	return e.GenerateOutString(EOutError, err.Error())
 }

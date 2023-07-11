@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"strconv"
@@ -9,10 +10,21 @@ import (
 const timeFormat = "15:04"
 
 // StartWork function handles the work process in the club
-func StartWork(club *Club, events []*Event, ch chan string) {
-
+func StartWork(sc *bufio.Scanner, ch chan string) {
 	// close channel after function finish
 	defer close(ch)
+
+	club, err := NewClubFromScanner(sc)
+	if err != nil {
+		ch <- err.Error()
+		return
+	}
+
+	events, err := NewEventsFromScanner(sc)
+	if err != nil {
+		ch <- err.Error()
+		return
+	}
 
 	ch <- club.OpenAt.Format(timeFormat)
 

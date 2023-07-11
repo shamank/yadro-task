@@ -1,6 +1,4 @@
-FROM golang:latest
-
-ARG file_path
+FROM golang:latest as build
 
 WORKDIR /app
 
@@ -8,4 +6,11 @@ COPY . .
 
 RUN go build -o ./.bin/app.exe ./cmd/main.go
 
-CMD ["./.bin/app.exe", "$file_path"]
+FROM alpine:latest
+
+WORKDIR /app
+
+COPY --from=build /app/.bin/app.exe ./.bin/app.exe
+COPY ./tests/ ./tests
+
+ENTRYPOINT ["./.bin/app.exe"]

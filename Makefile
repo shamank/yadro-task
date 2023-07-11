@@ -5,10 +5,12 @@ build:
 	go build -o ./.bin/app.exe ./cmd/main.go
 
 run: build
-	./.bin/app.exe ./tests/case_1.txt
+	./.bin/app.exe $(FILE)
 
 docker-build:
-	docker build -t rmaldybaev/yadro --build-arg file_path=./tests/case_1.txt .
+	docker build -t rmaldybaev/yadro .
 
 docker-run:
-	docker run rmaldybaev/yadro
+	docker run rmaldybaev/yadro $(FILE)
+
+docker: docker-build docker-run
